@@ -1,0 +1,4 @@
+TLP_ULIB=/usr/lib/udev
+TLP_CONF=/usr/share/defaults/tlp
+TLP_SYSD=/usr/lib/systemd/system
+TLP_WITH_ELOGIND=0
