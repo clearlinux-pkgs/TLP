@@ -1,2 +1,4 @@
 mkdir -p %{buildroot}/usr/lib/systemd/system/multi-user.target.wants
 ln -sf ../tlp.service %{buildroot}/usr/lib/systemd/system/multi-user.target.wants/
+mkdir -p %{buildroot}/usr/share/defaults
+install -m0644 default %{buildroot}/usr/share/defaults/tlp

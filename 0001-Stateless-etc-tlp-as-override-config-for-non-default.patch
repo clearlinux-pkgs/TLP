@@ -1,0 +1,44 @@
+From 317a76f9d1996b0735b99627ba1a622c4152c743 Mon Sep 17 00:00:00 2001
+From: Auke Kok <auke-jan.h.kok@intel.com>
+Date: Tue, 14 Jan 2020 10:52:40 -0800
+Subject: [PATCH] Stateless: `/etc/tlp` as override config for non-default
+ settings.
+
+---
+ default          | 3 +++
+ tlp-func-base.in | 5 ++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/default b/default
+index 748037f..37c8ca2 100644
+--- a/default
++++ b/default
+@@ -2,6 +2,9 @@
+ # tlp - Parameters for power saving
+ # See full explanation: https://linrunner.de/en/tlp/docs/tlp-configuration.html
+ 
++# clearlinux users: copy this file to `/etc/tlp` and edit THAT file, and not
++# the copy under `/usr/share/defaults/tlp`.
++
+ # Notes:
+ # - Some parameters are disabled, remove the leading '#' to enable # them;
+ #   shown values are suggestions not defaults
+diff --git a/tlp-func-base.in b/tlp-func-base.in
+index 449228d..1b4ad2f 100644
+--- a/tlp-func-base.in
++++ b/tlp-func-base.in
+@@ -346,7 +346,10 @@ create_rundir () { # make sure $RUNDIR exists
+ # --- Configuration
+ 
+ read_defaults () { # read config file
+-    if [ -f $CONFFILE ]; then
++    if [ -f /etc/tlp ]; then
++        . /etc/tlp
++        return 0
++    elif [ -f $CONFFILE ]; then
+         # shellcheck disable=SC1090
+         . $CONFFILE
+         return 0
+-- 
+2.24.1
+

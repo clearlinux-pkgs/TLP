@@ -4,7 +4,7 @@
 #
 Name     : TLP
 Version  : 1.2.2
-Release  : 1
+Release  : 2
 URL      : https://github.com/linrunner/TLP/archive/1.2.2.tar.gz
 Source0  : https://github.com/linrunner/TLP/archive/1.2.2.tar.gz
 Summary  : Advanced Power Management for Linux
@@ -15,6 +15,7 @@ Requires: TLP-bin = %{version}-%{release}
 Requires: TLP-data = %{version}-%{release}
 Requires: TLP-license = %{version}-%{release}
 Requires: TLP-services = %{version}-%{release}
+Patch1: 0001-Stateless-etc-tlp-as-override-config-for-non-default.patch
 
 %description
 # TLP - Linux Advanced Power Management
@@ -66,13 +67,15 @@ services components for the TLP package.
 
 %prep
 %setup -q -n TLP-1.2.2
+cd %{_builddir}/TLP-1.2.2
+%patch1 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1565201097
+export SOURCE_DATE_EPOCH=1579028079
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -81,22 +84,24 @@ export CFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
 export FCFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
 export FFLAGS="$CFLAGS -O3 -ffat-lto-objects -flto=4 "
 export CXXFLAGS="$CXXFLAGS -O3 -ffat-lto-objects -flto=4 "
-make  %{?_smp_mflags} TLP_ULIB=/usr/lib/udev \
+make  %{?_smp_mflags}  TLP_ULIB=/usr/lib/udev \
 TLP_CONF=/usr/share/defaults/tlp \
 TLP_SYSD=/usr/lib/systemd/system \
 TLP_WITH_ELOGIND=0
 
 
 %install
-export SOURCE_DATE_EPOCH=1565201097
+export SOURCE_DATE_EPOCH=1579028079
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/TLP
-cp COPYING %{buildroot}/usr/share/package-licenses/TLP/COPYING
-cp LICENSE %{buildroot}/usr/share/package-licenses/TLP/LICENSE
+cp %{_builddir}/TLP-1.2.2/COPYING %{buildroot}/usr/share/package-licenses/TLP/746795d22d1c9880ae7217c2d9007d4509a4c0fa
+cp %{_builddir}/TLP-1.2.2/LICENSE %{buildroot}/usr/share/package-licenses/TLP/06877624ea5c77efe3b7e39b0f909eda6e25a4ec
 %make_install
 ## install_append content
 mkdir -p %{buildroot}/usr/lib/systemd/system/multi-user.target.wants
 ln -sf ../tlp.service %{buildroot}/usr/lib/systemd/system/multi-user.target.wants/
+mkdir -p %{buildroot}/usr/share/defaults
+install -m0644 default %{buildroot}/usr/share/defaults/tlp
 ## install_append end
 
 %files
@@ -132,6 +137,7 @@ ln -sf ../tlp.service %{buildroot}/usr/lib/systemd/system/multi-user.target.want
 /usr/share/bash-completion/completions/tlp-stat
 /usr/share/bash-completion/completions/wifi
 /usr/share/bash-completion/completions/wwan
+/usr/share/defaults/tlp
 /usr/share/metainfo/de.linrunner.tlp.metainfo.xml
 /usr/share/tlp/func.d/05-tlp-func-pm
 /usr/share/tlp/func.d/10-tlp-func-cpu
@@ -148,8 +154,8 @@ ln -sf ../tlp.service %{buildroot}/usr/lib/systemd/system/multi-user.target.want
 
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/TLP/COPYING
-/usr/share/package-licenses/TLP/LICENSE
+/usr/share/package-licenses/TLP/06877624ea5c77efe3b7e39b0f909eda6e25a4ec
+/usr/share/package-licenses/TLP/746795d22d1c9880ae7217c2d9007d4509a4c0fa
 
 %files services
 %defattr(-,root,root,-)
