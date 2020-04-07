@@ -4,7 +4,7 @@
 #
 Name     : TLP
 Version  : 1.2.2
-Release  : 2
+Release  : 3
 URL      : https://github.com/linrunner/TLP/archive/1.2.2.tar.gz
 Source0  : https://github.com/linrunner/TLP/archive/1.2.2.tar.gz
 Summary  : Advanced Power Management for Linux
@@ -12,6 +12,7 @@ Group    : Development/Tools
 License  : GPL-2.0
 Requires: TLP-autostart = %{version}-%{release}
 Requires: TLP-bin = %{version}-%{release}
+Requires: TLP-config = %{version}-%{release}
 Requires: TLP-data = %{version}-%{release}
 Requires: TLP-license = %{version}-%{release}
 Requires: TLP-services = %{version}-%{release}
@@ -34,11 +35,20 @@ autostart components for the TLP package.
 Summary: bin components for the TLP package.
 Group: Binaries
 Requires: TLP-data = %{version}-%{release}
+Requires: TLP-config = %{version}-%{release}
 Requires: TLP-license = %{version}-%{release}
 Requires: TLP-services = %{version}-%{release}
 
 %description bin
 bin components for the TLP package.
+
+
+%package config
+Summary: config components for the TLP package.
+Group: Default
+
+%description config
+config components for the TLP package.
 
 
 %package data
@@ -67,7 +77,6 @@ services components for the TLP package.
 
 %prep
 %setup -q -n TLP-1.2.2
-cd %{_builddir}/TLP-1.2.2
 %patch1 -p1
 
 %build
@@ -75,7 +84,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1579028079
+export SOURCE_DATE_EPOCH=1586283427
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -91,12 +100,12 @@ TLP_WITH_ELOGIND=0
 
 
 %install
-export SOURCE_DATE_EPOCH=1579028079
+export SOURCE_DATE_EPOCH=1586283427
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/TLP
 cp %{_builddir}/TLP-1.2.2/COPYING %{buildroot}/usr/share/package-licenses/TLP/746795d22d1c9880ae7217c2d9007d4509a4c0fa
 cp %{_builddir}/TLP-1.2.2/LICENSE %{buildroot}/usr/share/package-licenses/TLP/06877624ea5c77efe3b7e39b0f909eda6e25a4ec
-%make_install
+%make_install TLP_ULIB=/usr/lib/udev TLP_SYSD=/usr/lib/systemd/system TLP_ELOD=/usr/lib/elogind/system-sleep
 ## install_append content
 mkdir -p %{buildroot}/usr/lib/systemd/system/multi-user.target.wants
 ln -sf ../tlp.service %{buildroot}/usr/lib/systemd/system/multi-user.target.wants/
@@ -106,11 +115,9 @@ install -m0644 default %{buildroot}/usr/share/defaults/tlp
 
 %files
 %defattr(-,root,root,-)
-/lib/elogind/system-sleep/49-tlp-sleep
-/lib/udev/rules.d/85-tlp-rdw.rules
-/lib/udev/rules.d/85-tlp.rules
-/lib/udev/tlp-rdw-udev
-/lib/udev/tlp-usb-udev
+/usr/lib/elogind/system-sleep/49-tlp-sleep
+/usr/lib/udev/tlp-rdw-udev
+/usr/lib/udev/tlp-usb-udev
 
 %files autostart
 %defattr(-,root,root,-)
@@ -128,6 +135,11 @@ install -m0644 default %{buildroot}/usr/share/defaults/tlp
 /usr/bin/tlp-usblist
 /usr/bin/wifi
 /usr/bin/wwan
+
+%files config
+%defattr(-,root,root,-)
+/usr/lib/udev/rules.d/85-tlp-rdw.rules
+/usr/lib/udev/rules.d/85-tlp.rules
 
 %files data
 %defattr(-,root,root,-)
@@ -160,5 +172,5 @@ install -m0644 default %{buildroot}/usr/share/defaults/tlp
 %files services
 %defattr(-,root,root,-)
 %exclude /usr/lib/systemd/system/multi-user.target.wants/tlp.service
-/lib/systemd/system/tlp-sleep.service
-/lib/systemd/system/tlp.service
+/usr/lib/systemd/system/tlp-sleep.service
+/usr/lib/systemd/system/tlp.service

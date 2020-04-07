@@ -1,0 +1,1 @@
+TLP_ULIB=/usr/lib/udev TLP_SYSD=/usr/lib/systemd/system TLP_ELOD=/usr/lib/elogind/system-sleep
